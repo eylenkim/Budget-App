@@ -78,7 +78,9 @@ var UIController = (function(){
 		inputType: '.add__type',
 		inputDescription: '.add__description',
 		inputValue: '.add__value',
-		inputBtn: '.add__btn'
+		inputBtn: '.add__btn',
+		expensesContainer: '.expenses__list',
+		incomeContainer: '.income__list'
 	};
 
 
@@ -91,6 +93,53 @@ var UIController = (function(){
 			    description: document.querySelector(DOMstrings.inputDescription).value,
 			    value: document.querySelector(DOMstrings.inputValue).value
 		   };
+		},
+
+		//add each new item into the HTML/UI
+		addListItem: function(obj, type) {
+			var html, newHTML, element;
+
+			//Create HTML string with placeholder text
+
+			if (type === 'inc') {
+			element = DOMstrings.incomeContainer;
+
+             html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+              } 
+
+              else if (type === 'exp') {
+              element = DOMstrings.expensesContainer;
+
+             html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+              }
+
+			//replace the placeholder text with the data we receive from object
+			newHTML = html.replace('%id%', obj.id);
+				//you have to do = newHTML because you're replacing a new string on top of the previously replaced string
+			newHTML = newHTML.replace('%description%', obj.description);
+			newHTML = newHTML.replace('%value%', obj.value);
+
+			//Insert the HTML to the DOM // 'beforeend' keyword allows your html to be inserted as a child of .income__list/.expense__list
+			document.querySelector(element).insertAdjacentHTML('beforeend', newHTML);
+
+		},
+
+		clearFields: function(){
+			var fields, fieldsArr;
+
+			//this produces a list
+			fields = document.querySelectorAll(DOMstrings.inputDescription + ', ' + DOMstrings.inputValue);
+ 
+ 			//this tricks the slice method into thinking it's an array, which will return an array
+ 			fieldsArr = Array.prototype.slice.call(fields);
+
+ 			fieldsArr.forEach(function(current, index, array) {
+ 				current.value = "";
+
+ 			//set the focus back to the description
+ 			fieldsArr[0].focus();
+
+ 			});
 		},
 
 		//return your private DOMstrings so its exposes it to the public, so the other controller can access it
@@ -136,18 +185,29 @@ var controller = (function(budgetCtrl, UICtrl) {
 	var ctrlAddItem = function() {
 
 		var input, newItem;
-		// get field input data
+		// 1 get field input data
 		input = UICtrl.getInput();
 
-		//add the item to the budget controller
+		//2 add the item to the budget controller
 		newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
-		//add the new item to the UI
+		//3 add the new item to the UI
+		UICtrl.addListItem(newItem, input.type);
 
-		//calc the budget
+		//4 clear the fields
+		UICtrl.clearFields();
 
-		//display the budget
+		// calc and update the budget
+		updateBudget();
+	};
 
+	var updateBudget = function(){
+
+		//5 calc the budget
+
+		//6 return the budget
+
+		// 7 display the budget
 	};
 
 	//public init function to publicize the setupEventListener private function. You need to return it in an object to make it public.
