@@ -7,8 +7,26 @@ var budgetController = (function() {
 			this.id = id;
 			this.description = description;
 			this.value = value;
+			this.percentage = -1; // when something is undefined, we used -1
 		}
 	};
+
+	//this function calculate the percentage of expenses over your income
+	Expense.prototype.calcPercentage = function(totalIncome) {
+
+		if (totalIncome > 0) {
+			this.percentage = Math.round((this.value / totalIncome) * 100);
+		} else {
+			this.percentage = -1;
+		}
+		
+	};
+
+	//This function return the percentage amount
+	Expense.prototype.getPercentage = function () {
+		return this.percentage;
+	};
+
 
 	class Income {
 		constructor(id, description, value) {
@@ -91,7 +109,8 @@ var UIController = (function(){
 			return {
 				type: document.querySelector(DOMstrings.inputType).value,
 			    description: document.querySelector(DOMstrings.inputDescription).value,
-			    value: document.querySelector(DOMstrings.inputValue).value
+			    //parseFloat converts string numbers to an float integer
+			    value: parseFloat(document.querySelector(DOMstrings.inputValue).value)
 		   };
 		},
 
@@ -188,17 +207,23 @@ var controller = (function(budgetCtrl, UICtrl) {
 		// 1 get field input data
 		input = UICtrl.getInput();
 
-		//2 add the item to the budget controller
-		newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+		//** test 2-4 to see if the user input any data into the fields. If not, then alert that the fields can't be empty
+		if (input.description !== "" && !isNaN(input.value) && input.value > 0) {
 
-		//3 add the new item to the UI
-		UICtrl.addListItem(newItem, input.type);
+				//2 add the item to the budget controller
+				newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
-		//4 clear the fields
-		UICtrl.clearFields();
+				//3 add the new item to the UI
+				UICtrl.addListItem(newItem, input.type);
 
-		// calc and update the budget
-		updateBudget();
+				//4 clear the fields
+				UICtrl.clearFields();
+
+				// calc and update the budget
+				updateBudget();
+		} else {
+			alert('You must provide a description and a numerical value over 0')
+		}
 	};
 
 	var updateBudget = function(){
