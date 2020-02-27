@@ -36,6 +36,15 @@ var budgetController = (function() {
 		}
 	};
 
+	var calculateTotal = function(type) {
+		var sum = 0;
+
+		data.allItems[type].forEach(function(current) {
+			sum = sum + current.value;
+		});
+		data.totals[type] = sum;
+	};
+
 	//Data structure
 	var data = {
 		allItems: {
@@ -45,7 +54,9 @@ var budgetController = (function() {
 		totals: {
 			exp: 0,
 			inc: 0
-		}
+		},
+		budget: 0,
+		percentage: -1
 	};
 
 	//This public object helps push input values into the data structure above
@@ -76,6 +87,48 @@ var budgetController = (function() {
 			return newItem;
 		},
 
+		deleteItem: function(type, id) {
+			var ids, index;
+
+			//.map is like forEach but it returns a new array. This goes thru each item in either exp/inc and returns every id in an array
+			var ids = data.allItems[type].map(function(current) {
+				return current.id;
+			});
+			//This returns the specific index of the id in the parameter.
+			index = ids.indexOf(id);
+
+			//now delete this index of the id from the array. You check the index against -1 in case the item isn't found in the array. Remove it only if the index actually exists
+			if (index !== -1) {
+				//splice removes elements: splice (which index to start removing elements, how many to remove);
+				data.allItems[type].splice(index, 1)
+			}
+		},
+
+		calculateBudget: function() {
+			//calc total income + expenses
+			calculateTotal('exp');
+			calculateTotal('inc');
+
+			//calc budget: inc - expense
+			data.budget = data.totals.inc - data.totals.exp;
+
+			//calc the % of income that we spent
+			if (data.totals.inc > 0) {
+			data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+			} else {
+			data.percentage = -1;
+			};
+		},
+
+		getBudget: function() {
+			return {
+				budget: data.budget,
+				totalInc: data.totals.inc,
+				totalExp: data.totals.exp,
+				percentage: data.percentage
+			};
+		},
+
 		testing: function(){
 			console.log(data);
 		}
@@ -98,7 +151,13 @@ var UIController = (function(){
 		inputValue: '.add__value',
 		inputBtn: '.add__btn',
 		expensesContainer: '.expenses__list',
-		incomeContainer: '.income__list'
+		incomeContainer: '.income__list',
+		budgetLabel: '.budget__value',
+		incomeLabel: '.budget__income--value',
+		expensesLabel: '.budget__expenses--value',
+		percentageLabel: '.budget__expenses--percentage',
+		container: '.container'
+
 	};
 
 
@@ -123,13 +182,13 @@ var UIController = (function(){
 			if (type === 'inc') {
 			element = DOMstrings.incomeContainer;
 
-             html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+             html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
               } 
 
               else if (type === 'exp') {
               element = DOMstrings.expensesContainer;
 
-             html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+             html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
               }
 
 			//replace the placeholder text with the data we receive from object
@@ -161,6 +220,20 @@ var UIController = (function(){
  			});
 		},
 
+		displayBudget: function(obj) {
+			document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
+			document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
+			document.querySelector(DOMstrings.expensesLabel).textContent = obj.totalExp;
+		
+		if (obj.percentage > 0) {
+			document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + '%';
+		} else {
+			document.querySelector(DOMstrings.percentageLabel).textContent = '---';
+		};
+
+
+		},
+
 		//return your private DOMstrings so its exposes it to the public, so the other controller can access it
 		getDOMstrings: function() {
 			return DOMstrings;
@@ -168,10 +241,6 @@ var UIController = (function(){
 	}
 
 }) ();
-
-
-
-
 
 
 
@@ -198,6 +267,26 @@ var controller = (function(budgetCtrl, UICtrl) {
 					ctrlAddItem();
 				}
 			});
+
+
+		//Event delegation: we found that .container is the parent element that covers both all income and expense classes
+		document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+        };
+
+
+
+
+	var updateBudget = function(){
+
+		//5 calc the budget
+		budgetCtrl.calculateBudget();
+
+		//6 return the budget
+      	var budget = budgetCtrl.getBudget();
+
+		// 7 display the budget
+		UICtrl.displayBudget(budget);
+
 	};
 
 	//we are creating this as part of DRY principle so we can write our code once, but use it in .add__btn and keypress fucntion
@@ -226,19 +315,37 @@ var controller = (function(budgetCtrl, UICtrl) {
 		}
 	};
 
-	var updateBudget = function(){
+//Event delegation - event.target takes the target html of the event. The 4 .parentNodes takes the parent of that element, 4 nothces up so we can delegate it. This is called traversing
+	var ctrlDeleteItem = function(event) {
+		var itemID, splitID, type, ID;
 
-		//5 calc the budget
+		itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
 
-		//6 return the budget
+		//split the type ID: "inc-1"
+		if (itemID) {
+			splitID = itemID.split('-');
+			type = splitID[0];
+			ID = parseInt(splitID[1]);
 
-		// 7 display the budget
+			//1 delete the item from the data structure
+			budgetCtrl.deleteItem(type, ID);
+			//2 delete the item from the UI
+
+			//3 update and show the new budget
+		}
 	};
+
 
 	//public init function to publicize the setupEventListener private function. You need to return it in an object to make it public.
 		return {
 			init: function() {
 				console.log('Application has started');
+				UICtrl.displayBudget({
+				budget: 0,
+				totalInc: 0,
+				totalExp: 0,
+				percentage: -1
+				});
 				setupEventListeners();
 			}
 		};
