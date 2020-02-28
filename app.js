@@ -295,6 +295,18 @@ var controller = (function(budgetCtrl, UICtrl) {
 
 	};
 
+	var updatePercentages = function() {
+		//8 calc the %
+
+		// 9 read from the budget controller
+
+		//10 udpate the UI w/ the new %
+
+
+	};
+
+
+
 	//we are creating this as part of DRY principle so we can write our code once, but use it in .add__btn and keypress fucntion
 	var ctrlAddItem = function() {
 
@@ -314,11 +326,14 @@ var controller = (function(budgetCtrl, UICtrl) {
 				//4 clear the fields
 				UICtrl.clearFields();
 
-				// calc and update the budget
+				//5 calc and update the budget
 				updateBudget();
 		} else {
 			alert('You must provide a description and a numerical value over 0')
-		}
+		}; 
+				//6 calc and update the %
+					updatePercentages();
+
 	};
 
 //Event delegation - event.target takes the target html of the event. The 4 .parentNodes takes the parent of that element, 4 nothces up so we can delegate it. This is called traversing
@@ -341,6 +356,9 @@ var controller = (function(budgetCtrl, UICtrl) {
 
 			//3 update and show the new budget
 			updateBudget();
+			
+			//4 calc and update the %
+			updatePercentages();
 		}
 	};
 
