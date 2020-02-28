@@ -316,6 +316,8 @@ var UIController = (function(){
 			nodeListForEach(fields, function(cur) {
 				cur.classList.toggle('red-focus');
 			});
+
+			document.querySelector(DOMstrings.inputBtn).classList.toggle('red');
 		},
 
 		//return your private DOMstrings so its exposes it to the public, so the other controller can access it
