@@ -120,6 +120,17 @@ var budgetController = (function() {
 			};
 		},
 
+		calculatePercentages: function() {
+			//calc total income + expenses
+			calculateTotal('exp');
+			calculateTotal('inc');
+
+			//calc budget: inc - expense
+			data.percentage = data.totals.inc / data.totals.exp;
+
+
+		},
+
 		getBudget: function() {
 			return {
 				budget: data.budget,
