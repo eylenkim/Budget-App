@@ -352,5 +352,17 @@ h2 {
     .budget__expenses {
         margin-top: 15px;
     }
+    
+    .add__btn:active { transform: translateY(2px); }
+
+    .add__type:focus,
+    .add__description:focus,
+    .add__value:focus {
+        outline: none;
+        border: 1px solid #28B9B5;
+    }
+
+    .add__btn:focus { outline: none; }
+
 
 }
