@@ -170,6 +170,7 @@ height: 40vh;
     vertical-align: middle;
     line-height: 0.1;
     margin-left: 10px;
+    float: left;
 }
 
 .add__btn:active { transform: translateY(2px); }
@@ -288,3 +289,64 @@ h2 {
 .unpaid .item__percentage { box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1); }
 .unpaid:hover .item__description { font-weight: 900; }
 
+
+@media only screen and (max-width: 949px) {
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .add {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .bottom {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .expenses {
+        margin-top: 50px;
+        margin-left: -16px;
+        width: 80vw;
+    }
+
+    .income {
+        width: 80vw;
+        margin-right: 17px;
+    }
+
+    .add__description {
+        width: 98%;
+        order: 0;
+    }
+
+    .add__value {
+        margin-top: 15px;
+        margin-left: 29px;
+        width: 120px;
+        order: 2;
+    }
+
+    .add__btn {
+        margin-left: 25px;
+        margin-top: 14px;
+        order: 3;
+    }
+
+    .add__type {
+        order: 1;
+        margin-top: 15px;
+        margin-left: 21px;
+    }
+
+    .add__container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+}
