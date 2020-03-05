@@ -19,7 +19,7 @@ body {
     font-family: Open Sans;
     font-size: 16px;
     position: relative;
-    height: 100%
+    height: 1000px
     font-weight: 400;
 }
 
@@ -352,7 +352,7 @@ h2 {
     .budget__expenses {
         margin-top: 15px;
     }
-    
+
     .add__btn:active { transform: translateY(2px); }
 
     .add__type:focus,
