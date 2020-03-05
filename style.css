@@ -140,8 +140,10 @@ height: 40vh;
     margin-right: 10px;
     font-weight: 300;
     transition: border 0.3s;
-    float:left;
-    padding-bottom:5px;
+    float: left;
+    padding-bottom: 5px;
+    border: 1px #80808066 solid !important;
+
 }
 
 .add__description,
@@ -156,6 +158,8 @@ height: 40vh;
     border-radius: 5px;
     transition: border 0.3s;
     padding-left: 10px !important;
+    border: 1px #80808066 solid !important;
+
 }
 
 .add__description { width: 400px; float: left;}
@@ -324,6 +328,8 @@ h2 {
     .add__description {
         width: 98%;
         order: 0;
+        border: 1px #80808066 solid !important;
+
     }
 
     .add__value {
@@ -331,6 +337,8 @@ h2 {
         margin-left: 29px;
         width: 120px;
         order: 2;
+        border: 1px #80808066 solid !important;
+
     }
 
     .add__btn {
@@ -343,6 +351,8 @@ h2 {
         order: 1;
         margin-top: 15px;
         margin-left: 21px;
+        border: 1px #80808066 solid !important;
+
     }
 
     .add__container {
