@@ -349,4 +349,8 @@ h2 {
         flex-wrap: wrap;
     }
 
+    .budget__expenses {
+        margin-top: 15px;
+    }
+
 }
